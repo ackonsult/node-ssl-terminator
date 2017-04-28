@@ -13,21 +13,29 @@ $ npm install terminator
 ```js
 var Terminator = require('terminator');
 var terminator = new Terminator();
-
+ 
 var fs = require('fs');
 var options = {
-  key: fs.readFileSync('./server.key'),
-  cert: fs.readFileSync('./server.crt'),
-  ca: [fs.readFileSync('./ca.crt')],
-  ciphers: 'ALL:!LOW:!DSS:!EXP'
+  key: fs.readFileSync('/root/server.key'),
+  cert: fs.readFileSync('/root/server.crt'),
+  ciphers: [
+    "ECDHE-RSA-AES128-SHA256",
+    "DHE-RSA-AES128-SHA256",
+    "AES128-GCM-SHA256",
+    "!RC4", // RC4 be gone
+    "HIGH",
+    "!MD5",
+    "!aNULL"
+].join(':'),
+honorCipherOrder: true
 };
-
+ 
 terminator
   .listen(443)
   .forward(80, 'localhost')
-  //.hideErrors()
+  //.hideErrors() 
   .hideLogs();
-
+ 
 terminator.start(options, function() {
   console.log('SSL terminator started!');
 });
